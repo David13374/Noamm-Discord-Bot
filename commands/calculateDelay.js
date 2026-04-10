@@ -8,11 +8,8 @@ module.exports = {
     async execute(interaction) {
         const ping = interaction.options.getNumber('ping')
         const medianPing = 150 - ping
-        if (medianPing <= 0) {
-            await interaction.reply(`min: 0ms, max: 0ms`) 
-        }
-        else {
-            await interaction.reply(`min: ${ 0.8 * medianPing }ms, max: ${ 1.2 * medianPing }ms`) 
-        }
+
+        if (medianPing <= 0) await interaction.reply(`min: 0ms, max: 0ms`)
+        else await interaction.reply(`min: ${ 0.8 * medianPing }ms, max: ${ 1.2 * medianPing }ms`)
     }
 }

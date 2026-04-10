@@ -4,19 +4,7 @@ const fs = require('node:fs')
 const path = require('node:path')
 
 const token = process.env.DISCORD_BOT_TOKEN
-
-const client = new Client({
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent
-    ],
-})
-
-client.on(Events.ClientReady, readyClient => {
-    if (!readyClient || !readyClient.user) return console.log("Couldn't log in successfully")
-    console.log(`Successfully logged in as ${readyClient.user.tag}`)
-})
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] })
 
 client.commands = new Collection()
 const commandsPath = path.join(__dirname, 'commands')
@@ -28,19 +16,18 @@ for (const file of commandFiles) {
     client.commands.set(command.data.name, command)
 }
 
-
 const eventsPath = path.join(__dirname, 'events')
 const eventFiles = fs.readdirSync(eventsPath).filter((file) => file.endsWith('.js'))
 
 for (const file of eventFiles) {
     const filePath = path.join(eventsPath, file)
     const event = require(filePath)
-    if (event.once) {
-        client.once(event.name, (...args) => event.execute(...args));
-    }
-    else {
-        client.on(event.name, (...args) => event.execute(...args));
-    }
+
+    if (event.once) client.once(event.name, (...args) => event.execute(...args));
+    else client.on(event.name, (...args) => event.execute(...args));
 }
 
+client.on(Events.ClientReady, c => console.log(`Successfully logged in as ${c.user.tag}`))
 client.login(token).catch(err => console.error("Login failed:", err.message))
+
+setTimeout(() => import("./deploycommands.js"), 5000)
