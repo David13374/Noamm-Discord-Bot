@@ -39,6 +39,10 @@ client.once(Events.ClientReady, (client: Client) => {
 client.on(Events.MessageCreate, (message: Message) => {
     let content = message.content
     let channel = client.channels.cache.get(message.channelId) as TextChannel
+    if (message.member?.roles.cache.some( role => role.name == "my son")) {
+        return
+    }
+
 
     if (channel == undefined) {
         console.log("Channel is undefined, this shouldn't happen")
