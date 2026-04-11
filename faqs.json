@@ -39,7 +39,7 @@
       ["player", "size"],
       ["player", "sizes"]
     ],
-    "answer": "You can get custom names and player sizes by donating to the mod. Ping <@&NOAMM_ROLE_ID> regarding how to donate."
+    "answer": "You can get custom names and player sizes by donating to the mod. Ping <@601764042704683040> regarding how to donate."
   },
   {
     "id": "crash_help",

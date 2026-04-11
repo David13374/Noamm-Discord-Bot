@@ -3,7 +3,12 @@ const path = require('node:path')
 const fs = require('node:fs')
 
 const faqsPath = path.join(__dirname, '..', 'faqs.json')
-const faqs = JSON.parse(fs.readFileSync(faqsPath, 'utf8'))
+let faqs = []
+try {
+    faqs = JSON.parse(fs.readFileSync(faqsPath, 'utf8'))
+} catch (err) {
+    console.error("Failed to load faqs.json:", err)
+}
 
 const cooldown = 3000
 const lastSent = new Map()
