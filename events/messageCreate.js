@@ -42,14 +42,12 @@ module.exports = {
         if (!message.channel) return
 
         const content = message.content.toLowerCase()
-
-
         const faq = matchFaq(content)
+
+        if (!faq) return
 
         const now = Date.now()
         const last = lastSent.get(faq.id) || 0
-        
-        if (!faq) return
         
         if (now - last < cooldown) return
         lastSent.set(faq.id, now)
@@ -58,7 +56,7 @@ module.exports = {
             if (faq.id = "api_down") {
                 if (now - last < apiDelay) {
                     let time = Math.floor((now - last) / 1000)
-                    
+
                     if (lastApiStatus == false) {
                         await message.reply(`Api is currently down, last checked: ${time} seconds ago`)
                     }
