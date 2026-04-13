@@ -25,12 +25,12 @@ const matchFaq = content => {
     return null
 }
 
-let lastApiStatus = true
+let lastApiStatus = false
 const apiDelay = 300_000 // 5 min
 
 const apiUrl = "http://localhost:3000/health"
 const getApiStatus = async () => await fetch(apiUrl).then((response) => response.ok).catch(() => false)
-let lastApiCheck = Date.now()
+let lastApiCheck = Date.now() - apiDelay * 2
 
 module.exports = {
     name: Events.MessageCreate,
@@ -55,17 +55,13 @@ module.exports = {
             else {
                 if (now - lastApiCheck < apiDelay) {
                     let time = Math.floor((now - lastApiCheck) / 1000)
-
-                    if (! lastApiStatus) await message.reply(`Api is currently down, last checked: ${time} seconds ago`)
-                    else await message.reply(`Api is currently up, last checked: ${time} seconds ago`)
-
+                    await message.reply(`Api is currently ${lastApiStatus ? "up" : "down"}, last checked: ${time} seconds ago`)
                     return
                 }
 
                 lastApiCheck = now
-                lastApiStatus = getApiStatus()
-                if (! lastApiStatus) await message.reply(`Api is currently down`)
-                else await message.reply(`Api is currently up`)
+                lastApiStatus = await getApiStatus()
+                await message.reply(`Api is currently ${lastApiStatus ? "up" : "down"}`)
             }
         }
         catch (err) {
