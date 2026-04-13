@@ -26,11 +26,18 @@ const matchFaq = content => {
 }
 
 let lastApiStatus = false
-const apiDelay = 300_000 // 5 min
-
-const apiUrl = "http://localhost:3000/health"
-const getApiStatus = async () => await fetch(apiUrl).then((response) => response.ok).catch(() => false)
+const apiDelay = 150_000
 let lastApiCheck = Date.now() - apiDelay * 2
+const apiUrl = "http://api:3000/health"
+
+async function getApiStatus() {
+    try {
+        return (await fetch(apiUrl)).ok
+    }
+    catch (e) {
+        return false
+    }
+}
 
 module.exports = {
     name: Events.MessageCreate,
