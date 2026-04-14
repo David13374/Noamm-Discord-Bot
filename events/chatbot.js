@@ -26,17 +26,16 @@ module.exports = {
             if (now - lastSent < cooldown) return
             lastSent = now
 
-            const cleanMessage = message.content.replace(`<@${client.user.id}>`, '').trim()
+            const cleanMessage = message.content.replace(`<@${ client.user.id }>`, '').trim()
 
-            if (cleanMessage.length > 0) {
-                try {
-                    await message.channel.sendTyping()
-                    const aiResponse = await ai.askAI(cleanMessage)
-                    await message.reply(aiResponse)
-                } catch (err) {
-                    console.error("AI Reply Error:", err)
-                    await message.reply("Sorry, my brain is currently offline.")
-                }
+            if (cleanMessage.length > 0) try {
+                await message.channel.sendTyping()
+                const aiResponse = (await ai.askAI(message.author.id, cleanMessage)).substring(0, 1800)
+                await message.reply(aiResponse)
+            }
+            catch (err) {
+                console.error("AI Reply Error:", err)
+                await message.reply("Sorry, my brain is currently offline.")
             }
         }
     }

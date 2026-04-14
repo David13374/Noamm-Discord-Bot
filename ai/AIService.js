@@ -1,4 +1,4 @@
-const { Groq } = require("groq-sdk");
+const { Groq } = require("groq-sdk")
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
 
@@ -8,23 +8,39 @@ const aiRole = [
     "keep ur response under 10 words. and use lower level words"
 ]
 
-class AirService {
-    async askAI(userMessage) {
+class AiService {
+    constructor() {
+        this.conversations = new Map()
+        this.maxHistory = 10
+    }
+
+    async askAI(userId, userMessage) {
         try {
+            if (! this.conversations.has(userId)) {
+                this.conversations.set(userId, [])
+            }
+
+            const history = this.conversations.get(userId)
+            history.push({ role: "user", content: userMessage })
+
+            if (history.length > this.maxHistory) history.splice(0, 2)
+            const messagesToSend = [{ role: "system", content: aiRole.join("\n") }, ...history]
+
             const chatCompletion = await groq.chat.completions.create({
-                messages: [
-                    { role: "system", content: aiRole.join("\n") },
-                    { role: "user", content: userMessage }
-                ],
+                messages: messagesToSend,
                 model: "openai/gpt-oss-120b",
                 temperature: 0.1,
             })
 
-            return chatCompletion.choices[0].message.content;
-        } catch (error) {
-            return error.content
+            const reply = chatCompletion.choices[0].message.content
+            history.push({ role: "assistant", content: reply })
+
+            return reply
+        }
+        catch (error) {
+            return error.message
         }
     }
 }
 
-module.exports = new AirService()
+module.exports = new AiService()
